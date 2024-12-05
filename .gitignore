@@ -4,3 +4,4 @@ docs
 .vscode/
 /dist
 /build
+.vercel
