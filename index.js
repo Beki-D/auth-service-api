@@ -66,7 +66,11 @@ const server = new ApolloServer({
 server.start().then(() => {
   app.use(
     "/graphql",
-    cors(),
+    cors({
+      origin: "https://studio.apollographql.com", // Allow Apollo Studio
+      methods: ["GET", "POST"],
+      credentials: true,
+    }),
     json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
