@@ -5,6 +5,7 @@ const {
   findUserByEmail,
   findUserById,
   throwGraphQLError,
+  isAdmin,
 } = require("../utils/auth");
 const User = require("../models/User");
 
@@ -17,6 +18,13 @@ const resolvers = {
       if (!foundUser) throwGraphQLError("User not found", "NOT_FOUND");
 
       return foundUser;
+    },
+    users: async (parent, args, { user }) => {
+      if (!user) throwGraphQLError("You must be logged in", "UNAUTHENTICATED");
+      await isAdmin(user.id);
+
+      const users = await User.find();
+      return users;
     },
   },
   Mutation: {
@@ -74,6 +82,15 @@ const resolvers = {
       if (!updatedUser) throwGraphQLError("User not found", "NOT_FOUND");
 
       return updatedUser;
+    },
+    deleteUser: async (parent, { id }, { user }) => {
+      if (!user) throwGraphQLError("You must be logged in", "UNAUTHENTICATED");
+      await isAdmin(user.id);
+
+      const deletedUser = await User.findByIdAndDelete(id);
+      if (!deletedUser) throwGraphQLError("User not found", "NOT_FOUND");
+
+      return deletedUser;
     },
   },
 };

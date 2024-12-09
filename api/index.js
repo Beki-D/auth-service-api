@@ -57,20 +57,26 @@ const server = new ApolloServer({
     const authHeader = req.headers.authorization || "";
     const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
     const user = getUser(token);
-    // console.log("Decoded user from token:", user);
     return { user };
   },
 });
+
+// CORS configuration
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://studio.apollographql.com",
+  ],
+  methods: ["GET", "POST"],
+  credentials: true,
+};
 
 // Start the Apollo server
 server.start().then(() => {
   app.use(
     "/graphql",
-    cors({
-      origin: "https://studio.apollographql.com", // Allow Apollo Studio
-      methods: ["GET", "POST"],
-      credentials: true,
-    }),
+    cors(corsOptions),
     json(),
     expressMiddleware(server, {
       context: async ({ req }) => {

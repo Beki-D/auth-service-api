@@ -19,6 +19,23 @@ const throwGraphQLError = (message, code) => {
   throw new GraphQLError(message, { extensions: { code } });
 };
 
+const isAdmin = async (userId) => {
+  const user = await User.findById(userId);
+  console.log(`Checking admin status for user ID: ${userId}`);
+
+  if (!user) {
+    console.error(`User not found for ID: ${userId}`);
+    throwGraphQLError(`User ${user} not found`, "NOT_FOUND");
+  }
+
+  if (user.role !== "admin") {
+    console.error(`User ID: ${userId} is not an admin`);
+    throwGraphQLError("You must be an admin", "FORBIDDEN");
+  }
+
+  return true;
+};
+
 module.exports = {
   hashPassword,
   validatePassword,
@@ -26,4 +43,5 @@ module.exports = {
   findUserByEmail,
   findUserById,
   throwGraphQLError,
+  isAdmin,
 };
