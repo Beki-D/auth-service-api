@@ -21,7 +21,6 @@ const throwGraphQLError = (message, code) => {
 
 const isAdmin = async (userId) => {
   const user = await User.findById(userId);
-  console.log(`Checking admin status for user ID: ${userId}`);
 
   if (!user) {
     console.error(`User not found for ID: ${userId}`);
